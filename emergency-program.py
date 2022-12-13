@@ -404,3 +404,36 @@ def place(long_now, ans_me):
             temp_nearest_hostipal = {'lat': lat, 'lon': lon}
             ord_nearest_hostipal.append(temp_nearest_hostipal)
             ans_nearest_hostipal = find_closest_lat_lon(ord_nearest_hostipal, point_to_find)
+    #เปลี่ยนสีที่โรงพยาบาลที่ใกล้ที่สุด   
+    for find_nearest_private_hospitals_no_card in private_hospitals_no_card:
+        if ans_nearest_hostipal["lat"] == find_nearest_private_hospitals_no_card[1]:
+            folium.CircleMarker(location=[find_nearest_private_hospitals_no_card[1], find_nearest_private_hospitals_no_card[2]], radius=60, color='red', fill_color='pink').add_to(map)
+            route_lats_longs = [[position_me[0], position_me[1]], [find_nearest_private_hospitals_no_card[1], find_nearest_private_hospitals_no_card[2]]]
+            plugins.AntPath(route_lats_longs).add_to(map)
+
+    for find_nearest_private_hospitals_card in private_hospitals_card:
+        if ans_nearest_hostipal["lat"] == find_nearest_private_hospitals_card[1]:
+            folium.CircleMarker(location=[find_nearest_private_hospitals_card[1], find_nearest_private_hospitals_card[2]], radius=60, color='red', fill_color='pink').add_to(map)
+            route_lats_longs = [[position_me[0], position_me[1]], [find_nearest_private_hospitals_card[1], find_nearest_private_hospitals_card[2]]]
+            plugins.AntPath(route_lats_longs).add_to(map)
+
+    for find_nearest_government_hospital_no_card in government_hospital_no_card:
+        if ans_nearest_hostipal["lat"] == find_nearest_government_hospital_no_card[1]:
+            folium.CircleMarker(location=[find_nearest_government_hospital_no_card[1], find_nearest_government_hospital_no_card[2]], radius=60, color='red', fill_color='pink').add_to(map)
+            route_lats_longs = [[position_me[0], position_me[1]], [find_nearest_government_hospital_no_card[1], find_nearest_government_hospital_no_card[2]]]
+            plugins.AntPath(route_lats_longs).add_to(map)
+
+    for find_nearest_government_hospital_card in government_hospital_card:
+        if ans_nearest_hostipal["lat"] == find_nearest_government_hospital_card[1]:
+            folium.CircleMarker(location=[find_nearest_government_hospital_card[1], find_nearest_government_hospital_card[2]], radius=60, color='red', fill_color='pink').add_to(map)
+            route_lats_longs = [[position_me[0], position_me[1]], [find_nearest_government_hospital_card[1], find_nearest_government_hospital_card[2]]]
+            plugins.AntPath(route_lats_longs).add_to(map)
+
+    map.save("emergency_map.html")
+
+def main():
+    """main"""
+    long = float(input())
+    ans = float(input())
+    place(long, ans)
+main()
