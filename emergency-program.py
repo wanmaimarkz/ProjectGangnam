@@ -1,4 +1,26 @@
+"""Project"""
 import folium
+from folium import plugins
+
+def dist_between_two_lat_lon(*args):
+    """calculate distance"""
+    from math import asin, cos, radians, sin, sqrt
+    lat1, lat2, long1, long2 = map(radians, args)
+
+    dist_lats = abs(lat2 - lat1) 
+    dist_longs = abs(long2 - long1) 
+    a = sin(dist_lats/2)**2 + cos(lat1) * cos(lat2) * sin(dist_longs/2)**2
+    c = asin(sqrt(a)) * 2
+    radius_earth = 6378
+    return c * radius_earth
+
+def find_closest_lat_lon(data, v):
+    """Calculate the distance of the nearest place"""
+    try:
+        return min(data, key=lambda p: dist_between_two_lat_lon(v['lat'],p['lat'],v['lon'],p['lon']))
+    except TypeError:
+        print('Not a list or not a number.')
+
 def place(long_now, ans_me):
     """find location"""
     position_me = []
@@ -116,7 +138,7 @@ def place(long_now, ans_me):
                     ['สน.มักกะสัน', 13.746494861395274, 100.5834623343306],
                     ['สถานีตำรวจภูธรท่าอากาศยานสุวรรณภูมิ', 13.713781113358149, 100.775552397249]
             ]
-    
+
     private_hospitals_no_card = [
                     ['โรงพยาบาลวิชัยยุทธ', 13.78314988922761, 100.53362243904631],
                     ['โรงพยาบาลเปาโล เมโมเรียล พหลโยธิน', 13.792141570393209, 100.55009495956193],
@@ -323,7 +345,7 @@ def place(long_now, ans_me):
             temp_place_private_hospitals_card = {'lat': lat, 'lon': lon}
             ord_private_hospitals_card.append(temp_place_private_hospitals_card)
             ans_private_hospitals_card = find_closest_lat_lon(ord_private_hospitals_card, point_to_find)
-        
+    
     for answer_gh_no_c in place_government_hospital_no_card:
         if answer_gh_no_c['features']:
             lat = answer_gh_no_c['features'][0]['geometry']['coordinates'][0]
@@ -332,12 +354,53 @@ def place(long_now, ans_me):
             temp_place_government_hospital_no_card = {'lat': lat, 'lon': lon}
             ord_government_hospital_no_card.append(temp_place_government_hospital_no_card)
             ans_government_hospital_no_card = find_closest_lat_lon(ord_government_hospital_no_card, point_to_find)
-            
-    map.save("emergency_map.html")
+    
+    for answer_ghc in place_government_hospital_card:
+        if answer_ghc['features']:
+            lat = answer_ghc['features'][0]['geometry']['coordinates'][0]
+            lon = answer_ghc['features'][0]['geometry']['coordinates'][1]
 
-def main():
-    """main"""
-    long = float(input())
-    ans = float(input())
-    place(long, ans)
-main()
+            temp_place_government_hospital_card = {'lat': lat, 'lon': lon}
+            ord_government_hospital_card.append(temp_place_government_hospital_card)
+            ans_government_hospital_card = find_closest_lat_lon(ord_government_hospital_card, point_to_find)
+    
+    #หาจาก lat เเละ lon ว่า โรงพยาบาลคืออะไร
+    for find_police_station in police_station:
+        if ans_police["lat"] == find_police_station[1]:
+            folium.CircleMarker(location=[find_police_station[1], find_police_station[2]], radius=60, color='red', fill_color='pink').add_to(map)
+            route_lats_longs = [[position_me[0], position_me[1]], [find_police_station[1], find_police_station[2]]]
+            plugins.AntPath(route_lats_longs).add_to(map)
+
+    for find_private_hospitals_no_card in private_hospitals_no_card:
+        if ans_private_hospitals_no_card["lat"] == find_private_hospitals_no_card[1]:
+            folium.CircleMarker(location=[find_private_hospitals_no_card[1], find_private_hospitals_no_card[2]], radius=60, color='purple', fill_color='gray').add_to(map)
+            place_nearest_hospital.append({'type': 'FeatureCollection',
+                    'query': [0, 0], 'features': [{'geometry': {'type': 'Point', 'coordinates': [find_private_hospitals_no_card[1], find_private_hospitals_no_card[2]]}}]})
+
+    for find_private_hospitals_card in private_hospitals_card:
+        if ans_private_hospitals_card["lat"] == find_private_hospitals_card[1]:
+            folium.CircleMarker(location=[find_private_hospitals_card[1], find_private_hospitals_card[2]], radius=60, color='purple', fill_color='gray').add_to(map)
+            place_nearest_hospital.append({'type': 'FeatureCollection',
+                    'query': [0, 0], 'features': [{'geometry': {'type': 'Point', 'coordinates': [find_private_hospitals_card[1], find_private_hospitals_card[2]]}}]})
+    
+    for find_government_hospital_no_card in government_hospital_no_card:
+        if ans_government_hospital_no_card["lat"] == find_government_hospital_no_card[1]:
+            folium.CircleMarker(location=[find_government_hospital_no_card[1], find_government_hospital_no_card[2]], radius=60, color='purple', fill_color='gray').add_to(map)
+            place_nearest_hospital.append({'type': 'FeatureCollection',
+                    'query': [0, 0], 'features': [{'geometry': {'type': 'Point', 'coordinates': [find_government_hospital_no_card[1], find_government_hospital_no_card[2]]}}]})
+    
+    for find_government_hospital_card in government_hospital_card:
+        if ans_government_hospital_card["lat"] == find_government_hospital_card[1]:
+            folium.CircleMarker(location=[find_government_hospital_card[1], find_government_hospital_card[2]], radius=60, color='purple', fill_color='gray').add_to(map)
+            place_nearest_hospital.append({'type': 'FeatureCollection',
+                    'query': [0, 0], 'features': [{'geometry': {'type': 'Point', 'coordinates': [find_government_hospital_card[1], find_government_hospital_card[2]]}}]})
+    
+    #หาที่ใกล้ที่สุดกันจริงๆ
+    for answer_nearest_hostipal in place_nearest_hospital:
+        if answer_nearest_hostipal['features']:
+            lat = answer_nearest_hostipal['features'][0]['geometry']['coordinates'][0]
+            lon = answer_nearest_hostipal['features'][0]['geometry']['coordinates'][1]
+
+            temp_nearest_hostipal = {'lat': lat, 'lon': lon}
+            ord_nearest_hostipal.append(temp_nearest_hostipal)
+            ans_nearest_hostipal = find_closest_lat_lon(ord_nearest_hostipal, point_to_find)
