@@ -295,6 +295,44 @@ def place(long_now, ans_me):
         place_government_hospital_card.append({'type': 'FeatureCollection',
         'query': [0, 0], 'features': [{'geometry': {'type': 'Point', 'coordinates': [loc_gm_hospi_card[1], loc_gm_hospi_card[2]]}}]})
    
+    #หาพิกัดของโรงพยาบาล
+    point_to_find = {'lat': position_me[0], 'lon': position_me[1]} #ตำแหน่งของเรา
+    for answer_ps in place_police_station:
+        if answer_ps['features']:
+            lat = answer_ps['features'][0]['geometry']['coordinates'][0]
+            lon = answer_ps['features'][0]['geometry']['coordinates'][1]
+
+            temp_place_police_station = {'lat': lat, 'lon': lon}
+            ord_police_station.append(temp_place_police_station)
+            ans_police = find_closest_lat_lon(ord_police_station, point_to_find)
+    
+    for answer_ph_no_c in place_private_hospitals_no_card:
+        if answer_ph_no_c['features']:
+            lat = answer_ph_no_c['features'][0]['geometry']['coordinates'][0]
+            lon = answer_ph_no_c['features'][0]['geometry']['coordinates'][1]
+
+            temp_place_private_hospitals_no_card = {'lat': lat, 'lon': lon}
+            ord_private_hospitals_no_card.append(temp_place_private_hospitals_no_card)
+            ans_private_hospitals_no_card = find_closest_lat_lon(ord_private_hospitals_no_card, point_to_find)
+
+    for answer_phc in place_private_hospitals_card:
+        if answer_phc['features']:
+            lat = answer_phc['features'][0]['geometry']['coordinates'][0]
+            lon = answer_phc['features'][0]['geometry']['coordinates'][1]
+
+            temp_place_private_hospitals_card = {'lat': lat, 'lon': lon}
+            ord_private_hospitals_card.append(temp_place_private_hospitals_card)
+            ans_private_hospitals_card = find_closest_lat_lon(ord_private_hospitals_card, point_to_find)
+        
+    for answer_gh_no_c in place_government_hospital_no_card:
+        if answer_gh_no_c['features']:
+            lat = answer_gh_no_c['features'][0]['geometry']['coordinates'][0]
+            lon = answer_gh_no_c['features'][0]['geometry']['coordinates'][1]
+
+            temp_place_government_hospital_no_card = {'lat': lat, 'lon': lon}
+            ord_government_hospital_no_card.append(temp_place_government_hospital_no_card)
+            ans_government_hospital_no_card = find_closest_lat_lon(ord_government_hospital_no_card, point_to_find)
+            
     map.save("emergency_map.html")
 
 def main():
