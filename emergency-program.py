@@ -224,6 +224,7 @@ def place(long_now, ans_me):
                     ['โรงพยาบาลเกษมราษฏร์บางแค', 13.71060056725986, 100.39861113957818],
                     ['โรงพยาบาลเกษมราษฏร์ประชาชื่น', 13.711278631307373, 100.3986299020161],
                     ['โรงพยาบาลการุญเวช สุขาภิบาล 3', 13.776886090337445, 100.67369891074325],
+                    ['โรงพยาบาลบางประกอก 3', 13.634362065126462, 100.5282707700732],
                     ['โรงพยาบาลนวมินทร์', 13.81126094659419, 100.72160479973105],
                     ['โรงพยาบาลนวมินทร์ 9', 13.811266771678644, 100.72400432608511],
                     ['โรงพยาบาลบางนา 1', 13.666845740528974, 100.63549846841323],
@@ -404,6 +405,7 @@ def place(long_now, ans_me):
             temp_nearest_hostipal = {'lat': lat, 'lon': lon}
             ord_nearest_hostipal.append(temp_nearest_hostipal)
             ans_nearest_hostipal = find_closest_lat_lon(ord_nearest_hostipal, point_to_find)
+    
     #เปลี่ยนสีที่โรงพยาบาลที่ใกล้ที่สุด   
     for find_nearest_private_hospitals_no_card in private_hospitals_no_card:
         if ans_nearest_hostipal["lat"] == find_nearest_private_hospitals_no_card[1]:
@@ -428,7 +430,6 @@ def place(long_now, ans_me):
             folium.CircleMarker(location=[find_nearest_government_hospital_card[1], find_nearest_government_hospital_card[2]], radius=60, color='red', fill_color='pink').add_to(map)
             route_lats_longs = [[position_me[0], position_me[1]], [find_nearest_government_hospital_card[1], find_nearest_government_hospital_card[2]]]
             plugins.AntPath(route_lats_longs).add_to(map)
-
     map.save("emergency_map.html")
 
 def main():
